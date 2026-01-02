@@ -1,0 +1,15 @@
+policy:
+  name: High-Risk Geography Warning
+  description: >
+    Display a DoD-aligned warning banner when users access
+    websites associated with high-risk geographic regions.
+
+  match:
+    geo_risk: high
+
+  actions:
+    inject_scripts:
+      - geo-risk-ui.inject
+
+  telemetry:
+    geo_risk_warning_displayed: medium
