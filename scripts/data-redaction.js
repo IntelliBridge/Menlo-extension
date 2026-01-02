@@ -1,15 +1,23 @@
 (() => {
-  const sensitivePatterns = /(CUI|SECRET|NOFORN|OPORD|FRAGO)/gi;
+  const patterns = /(CUI|SECRET|NOFORN|OPORD|FRAGO)/gi;
+  let redacted = false;
 
-  document.addEventListener("submit", event => {
-    const form = event.target;
-    if (!form) return;
+  document.addEventListener("submit", e => {
+    e.target
+      .querySelectorAll("input, textarea")
+      .forEach(f => {
+        if (patterns.test(f.value)) {
+          f.value = f.value.replace(patterns, "[REDACTED]");
+          redacted = true;
+        }
+      });
 
-    form.querySelectorAll("input, textarea").forEach(field => {
-      field.value = field.value.replace(
-        sensitivePatterns,
-        "[REDACTED]"
+    if (redacted) {
+      document.documentElement.setAttribute(
+        "data-dlp-redaction",
+        "true"
       );
-    });
+      console.warn("[DLP] Inline redaction applied");
+    }
   });
 })();
