@@ -2,9 +2,9 @@ environments:
   prod:
     adapter: menlo
     api_url: https://api.menlosecurity.com
-    token_env: MENLO_API_TOKEN
+    vault_path: menlo.prod
 
   test:
     adapter: menlo
     api_url: https://api.menlosecurity.com
-    token_env: MENLO_API_TOKEN_TEST
+    vault_path: menlo.test
