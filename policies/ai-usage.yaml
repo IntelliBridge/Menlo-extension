@@ -1,0 +1,15 @@
+policy:
+  name: AI Usage Controls
+  description: Warn users and redact sensitive data on AI platforms
+
+  match:
+    site_category: AI
+
+  actions:
+    inject_scripts:
+      - ai-warning-banner
+      - data-redaction
+
+  telemetry:
+    ai_site_access: medium
+    ai_redaction: medium
