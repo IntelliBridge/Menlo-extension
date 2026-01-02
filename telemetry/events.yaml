@@ -1,0 +1,12 @@
+events:
+  credential_block:
+    severity: high
+    category: identity_protection
+
+  ai_site_access:
+    severity: medium
+    category: user_awareness
+
+  ai_redaction:
+    severity: medium
+    category: data_loss_prevention
