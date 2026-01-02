@@ -1,15 +1,17 @@
 from .translate import translate_policy
 
-def deploy_script(client, script_name, script_content):
+def deploy_script(client, name, content):
     payload = {
-        "name": script_name,
+        "name": name,
         "type": "javascript",
-        "timing": "on_page_load",
+        "execution": "on_page_load",
         "context": "main_frame",
-        "content": script_content
+        "content": content
     }
-    client.post("/script-injection", payload)
+    client.post("/api/v1/script-injections", payload)
+
 
 def deploy_policy(client, policy):
-    payload = translate_policy(policy)
-    client.post("/policies", payload)
+    rules = translate_policy(policy)
+    for rule in rules:
+        client.post("/api/v1/policies/web", rule)
