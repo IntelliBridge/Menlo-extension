@@ -1,13 +1,119 @@
 (() => {
+  // ------------------------------------------------------------------
+  // CONFIGURATION
+  // ------------------------------------------------------------------
+
+  const AI_DOMAINS = [
+    "chatgpt.com", "openai.com",
+    "claude.ai", "anthropic.com",
+    "gemini.google.com", "ai.google.com",
+    "copilot.microsoft.com", "bing.com",
+    "perplexity.ai",
+    "huggingface.co",
+    "mistral.ai",
+    "cohere.com",
+    "x.ai", "grok.x.com",
+    "meta.ai",
+    "replit.com",
+    "cursor.sh",
+    "codeium.com",
+    "notion.so",
+    "canva.com",
+    "figma.com",
+    "you.com",
+    "duckduckgo.com"
+  ];
+
+  const AI_INPUT_SELECTORS = [
+    "textarea",
+    "input[type='text']",
+    "[contenteditable='true']"
+  ];
+
+  // ------------------------------------------------------------------
+  // DETECTION
+  // ------------------------------------------------------------------
+
+  const hostname = location.hostname.toLowerCase();
+
+  const domainMatch = AI_DOMAINS.some(d =>
+    hostname === d || hostname.endsWith(`.${d}`)
+  );
+
+  const domMatch = AI_INPUT_SELECTORS.some(sel =>
+    document.querySelector(sel)
+  );
+
+  if (!domainMatch && !domMatch) return;
+
+  // Prevent duplicate execution
+  if (document.getElementById("dod-ai-warning-banner")) return;
+
+  // ------------------------------------------------------------------
+  // CoCOM CONTEXT (Policy-Injected)
+  // ------------------------------------------------------------------
+
+  const cocom =
+    document.documentElement.getAttribute("data-cocom") ||
+    "GLOBAL";
+
+  // ------------------------------------------------------------------
+  // OFFICIAL DoD-ALIGNED WARNING LANGUAGE
+  // ------------------------------------------------------------------
+
+  const WARNING_TEXT = {
+    GLOBAL:
+      "WARNING: You are accessing an Artificial Intelligence / Generative System. " +
+      "Do NOT enter, upload, or process classified information, Controlled Unclassified Information (CUI), " +
+      "or any sensitive Department of Defense data.",
+
+    EUCOM:
+      "EUCOM WARNING: Use of AI systems is restricted. Do NOT input CUI, operational data, " +
+      "mission details, or sensitive DoD information into this system.",
+
+    INDOPACOM:
+      "INDOPACOM WARNING: AI system detected. Entry of CUI, mission data, or sensitive information " +
+      "is prohibited per theater policy.",
+
+    CENTCOM:
+      "CENTCOM WARNING: AI tools may pose data exposure risks. Do NOT submit sensitive or operational DoD data."
+  };
+
+  const message = WARNING_TEXT[cocom] || WARNING_TEXT.GLOBAL;
+
+  // ------------------------------------------------------------------
+  // UI BANNER
+  // ------------------------------------------------------------------
+
   const banner = document.createElement("div");
-  banner.style.backgroundColor = "#8b0000";
+  banner.id = "dod-ai-warning-banner";
+  banner.style.position = "sticky";
+  banner.style.top = "0";
+  banner.style.zIndex = "999999";
+  banner.style.backgroundColor = "#7a0000";
   banner.style.color = "#ffffff";
-  banner.style.padding = "10px";
+  banner.style.padding = "12px";
+  banner.style.fontSize = "14px";
   banner.style.fontWeight = "bold";
   banner.style.textAlign = "center";
-  banner.style.zIndex = "999999";
-  banner.textContent =
-    "⚠ AI tool detected. DoD data handling restrictions apply.";
+  banner.style.borderBottom = "3px solid #ffcc00";
+
+  banner.textContent = message;
 
   document.body.prepend(banner);
+
+  // ------------------------------------------------------------------
+  // TELEMETRY SIGNALING (Menlo-Compatible)
+  // ------------------------------------------------------------------
+
+  // DOM marker for Menlo telemetry correlation
+  document.documentElement.setAttribute(
+    "data-dod-ai-warning",
+    "displayed"
+  );
+
+  // Console signal (captured by Menlo session analytics)
+  console.warn(
+    `[DoD-AI-WARNING] cocom=${cocom} host=${hostname}`
+  );
 })();
