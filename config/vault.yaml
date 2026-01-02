@@ -1,0 +1,6 @@
+menlo:
+  prod:
+    api_token: "REPLACE_WITH_PROD_TOKEN"
+
+  test:
+    api_token: "REPLACE_WITH_TEST_TOKEN"
