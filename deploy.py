@@ -5,32 +5,59 @@ from adapters.menlo.deploy import deploy_script, deploy_policy
 
 ENV = "prod"
 
-# Load configs
-envs = yaml.safe_load(open("config/environments.yaml"))
-vault = yaml.safe_load(open("config/vault.yaml"))
+# ------------------------------------------------------------------
+# Load configuration
+# ------------------------------------------------------------------
+
+with open("config/environments.yaml") as f:
+    envs = yaml.safe_load(f)
+
+with open("config/vault.yaml") as f:
+    vault = yaml.safe_load(f)
 
 env_cfg = envs["environments"][ENV]
-vault_key = env_cfg["vault_path"].split(".")
+vault_root, vault_env = env_cfg["vault_path"].split(".")
 
-token = vault[vault_key[0]][vault_key[1]]["api_token"]
+token = vault[vault_root][vault_env]["api_token"]
 
 client = MenloClient(
     api_url=env_cfg["api_url"],
     token=token
 )
 
-# Deploy scripts
-for filename in sorted(open("scripts").read().split()):
-    if filename.endswith(".js"):
-        name = filename.replace(".js", "")
-        content = open(f"scripts/{filename}").read()
-        deploy_script(client, name, content)
+# ------------------------------------------------------------------
+# Deploy ALL JavaScript injection scripts
+# ------------------------------------------------------------------
 
-# Deploy policies
-for filename in sorted(open("policies").read().split()):
-    if filename.endswith(".yaml"):
-        policy = yaml.safe_load(open(f"policies/{filename}"))["policy"]
-        deploy_policy(client, policy)
+scripts_dir = "scripts"
 
-print("✅ Deployment completed successfully")
-print("✅ Adaptive Web Control Plane deployment complete.")
+for filename in sorted(os.listdir(scripts_dir)):
+    if not filename.endswith(".js"):
+        continue
+
+    script_name = filename.replace(".js", "")
+    script_path = os.path.join(scripts_dir, filename)
+
+    with open(script_path, "r") as f:
+        script_content = f.read()
+
+    print(f"Deploying script: {script_name}")
+    deploy_script(client, script_name, script_content)
+
+# ------------------------------------------------------------------
+# Deploy policies (which activate scripts)
+# ------------------------------------------------------------------
+
+policies_dir = "policies"
+
+for filename in sorted(os.listdir(policies_dir)):
+    if not filename.endswith(".yaml"):
+        continue
+
+    with open(os.path.join(policies_dir, filename)) as f:
+        policy = yaml.safe_load(f)["policy"]
+
+    print(f"Deploying policy: {policy['name']}")
+    deploy_policy(client, policy)
+
+print("✅ Adaptive Web Control Plane deployment complete")
