@@ -1,0 +1,89 @@
+(() => {
+  // ------------------------------------------------------------------
+  // GUARD: prevent duplicate execution
+  // ------------------------------------------------------------------
+  if (document.getElementById("dod-geo-risk-banner")) return;
+
+  // ------------------------------------------------------------------
+  // CONTEXT PROVIDED BY MENLO POLICY
+  // ------------------------------------------------------------------
+  // Expected to be injected by Menlo policy or metadata mapping
+  // Example:
+  // data-geo-risk="high"
+  // data-country-code="CN"
+  // data-cocom="INDOPACOM"
+  // ------------------------------------------------------------------
+
+  const geoRisk =
+    document.documentElement.getAttribute("data-geo-risk") || "low";
+
+  if (geoRisk.toLowerCase() !== "high") return;
+
+  const countryCode =
+    document.documentElement.getAttribute("data-country-code") || "UNKNOWN";
+
+  const cocom =
+    document.documentElement.getAttribute("data-cocom") || "GLOBAL";
+
+  // ------------------------------------------------------------------
+  // DoD-ALIGNED WARNING LANGUAGE (CoCOM-SCOPED)
+  // ------------------------------------------------------------------
+
+  const WARNING_TEXT = {
+    GLOBAL:
+      "WARNING: You are accessing a website hosted in or associated with a high-risk geographic region. " +
+      "Do NOT enter, upload, or process classified information, Controlled Unclassified Information (CUI), " +
+      "or sensitive Department of Defense data.",
+
+    EUCOM:
+      "EUCOM WARNING: High-risk geographic region detected. Entry of CUI, operational data, " +
+      "or sensitive DoD information is prohibited per theater policy.",
+
+    INDOPACOM:
+      "INDOPACOM WARNING: This site is associated with a high-risk geographic region. " +
+      "Do NOT input mission data, CUI, or sensitive DoD information.",
+
+    CENTCOM:
+      "CENTCOM WARNING: Elevated data exposure risk due to geographic hosting. " +
+      "Submission of sensitive or operational DoD data is prohibited."
+  };
+
+  const message = WARNING_TEXT[cocom] || WARNING_TEXT.GLOBAL;
+
+  // ------------------------------------------------------------------
+  // UI BANNER RENDERING
+  // ------------------------------------------------------------------
+
+  const banner = document.createElement("div");
+  banner.id = "dod-geo-risk-banner";
+  banner.style.position = "sticky";
+  banner.style.top = "0";
+  banner.style.zIndex = "999999";
+  banner.style.backgroundColor = "#8b0000";
+  banner.style.color = "#ffffff";
+  banner.style.padding = "12px";
+  banner.style.fontSize = "14px";
+  banner.style.fontWeight = "bold";
+  banner.style.textAlign = "center";
+  banner.style.borderBottom = "3px solid #ffcc00";
+
+  banner.textContent =
+    message + ` (Region Code: ${countryCode})`;
+
+  document.body.prepend(banner);
+
+  // ------------------------------------------------------------------
+  // TELEMETRY SIGNALING (MENLO-COMPATIBLE)
+  // ------------------------------------------------------------------
+
+  // DOM marker for Menlo session analytics
+  document.documentElement.setAttribute(
+    "data-dod-geo-risk-warning",
+    "displayed"
+  );
+
+  // Console signal for policy + script correlation
+  console.warn(
+    `[DoD-GEO-RISK] cocom=${cocom} country=${countryCode} host=${location.hostname}`
+  );
+})();
