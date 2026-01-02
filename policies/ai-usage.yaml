@@ -1,6 +1,6 @@
 policy:
   name: AI Usage Controls
-  description: Warn users and redact sensitive data on AI platforms
+  description: AI awareness, redaction, and DLP enforcement
 
   match:
     site_category: AI
@@ -9,7 +9,9 @@ policy:
     inject_scripts:
       - ai-warning-banner
       - data-redaction
+      - dlp-inline.inject
 
   telemetry:
-    ai_site_access: medium
+    ai_warning_displayed: medium
     ai_redaction: medium
+    ai_dlp_block: high
