@@ -1,9 +1,15 @@
 def translate_policy(policy):
-    """
-    Translate abstract policy intent into Menlo-compatible structure.
-    """
-    return {
-        "name": policy["name"],
-        "conditions": policy["match"],
-        "actions": policy["actions"]
-    }
+    rules = []
+
+    for script in policy["actions"]["inject_scripts"]:
+        rule = {
+            "name": f'{policy["name"]} – {script}',
+            "conditions": policy["match"],
+            "actions": {
+                "inject_script": script
+            },
+            "priority": 100
+        }
+        rules.append(rule)
+
+    return rules
