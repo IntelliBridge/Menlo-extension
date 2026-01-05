@@ -223,37 +223,23 @@ Enforcement is transparent and auditable
 
 This design supports:
 
-RMF documentation
-
 ATO review
 
 Least-privilege principles
 
-Extensibility
+Extensibility:
 
 You can safely:
 
-add new scripts
+  - add new scripts
 
-add new policies
+  - add new policies
 
-add new environments
+  - add new environments
 
-add new vendor adapters
+  - add new vendor adapters
 
 No refactoring required.
-
-Known Enhancements (Planned)
-
-Idempotent deploy (hashing & diffing)
-
---dry-run validation mode
-
-Explicit policy priority controls
-
-Additional vendor adapters
-
-Terraform wrapping
 
 Summary:
 
