@@ -30,6 +30,11 @@
     "[contenteditable='true']"
   ];
 
+  const root = document.documentElement;
+
+  // Prevent duplicate execution (session-safe)
+  if (root.getAttribute("data-dod-ai-warning") === "displayed") return;
+
   // ------------------------------------------------------------------
   // DETECTION
   // ------------------------------------------------------------------
@@ -46,26 +51,21 @@
 
   if (!domainMatch && !domMatch) return;
 
-  // Prevent duplicate execution
-  if (document.getElementById("dod-ai-warning-banner")) return;
-
   // ------------------------------------------------------------------
   // CoCOM CONTEXT (Policy-Injected)
   // ------------------------------------------------------------------
 
-  const cocom =
-    document.documentElement.getAttribute("data-cocom") ||
-    "GLOBAL";
+  const cocom = root.getAttribute("data-cocom") || "GLOBAL";
 
   // ------------------------------------------------------------------
-  // OFFICIAL DoD-ALIGNED WARNING LANGUAGE
+  // DoD-ALIGNED WARNING LANGUAGE
   // ------------------------------------------------------------------
 
   const WARNING_TEXT = {
     GLOBAL:
       "WARNING: You are accessing an Artificial Intelligence / Generative System. " +
       "Do NOT enter, upload, or process classified information, Controlled Unclassified Information (CUI), " +
-      "or any sensitive Department of Defense data.",
+      "or sensitive Department of Defense data.",
 
     EUCOM:
       "EUCOM WARNING: Use of AI systems is restricted. Do NOT input CUI, operational data, " +
@@ -103,16 +103,11 @@
   document.body.prepend(banner);
 
   // ------------------------------------------------------------------
-  // TELEMETRY SIGNALING (Menlo-Compatible)
+  // TELEMETRY SIGNALING
   // ------------------------------------------------------------------
 
-  // DOM marker for Menlo telemetry correlation
-  document.documentElement.setAttribute(
-    "data-dod-ai-warning",
-    "displayed"
-  );
+  root.setAttribute("data-dod-ai-warning", "displayed");
 
-  // Console signal (captured by Menlo session analytics)
   console.warn(
     `[DoD-AI-WARNING] cocom=${cocom} host=${hostname}`
   );
