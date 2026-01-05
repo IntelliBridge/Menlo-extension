@@ -7,23 +7,19 @@
   // ------------------------------------------------------------------
   // CONTEXT PROVIDED BY MENLO POLICY
   // ------------------------------------------------------------------
-  // Expected to be injected by Menlo policy or metadata mapping
-  // Example:
+  // Expected DOM attributes injected by Menlo:
   // data-geo-risk="high"
   // data-country-code="CN"
   // data-cocom="INDOPACOM"
   // ------------------------------------------------------------------
 
-  const geoRisk =
-    document.documentElement.getAttribute("data-geo-risk") || "low";
+  const root = document.documentElement;
 
-  if (geoRisk.toLowerCase() !== "high") return;
+  const geoRisk = (root.getAttribute("data-geo-risk") || "low").toLowerCase();
+  if (geoRisk !== "high") return;
 
-  const countryCode =
-    document.documentElement.getAttribute("data-country-code") || "UNKNOWN";
-
-  const cocom =
-    document.documentElement.getAttribute("data-cocom") || "GLOBAL";
+  const countryCode = root.getAttribute("data-country-code") || "UNKNOWN";
+  const cocom = root.getAttribute("data-cocom") || "GLOBAL";
 
   // ------------------------------------------------------------------
   // DoD-ALIGNED WARNING LANGUAGE (CoCOM-SCOPED)
@@ -51,11 +47,19 @@
   const message = WARNING_TEXT[cocom] || WARNING_TEXT.GLOBAL;
 
   // ------------------------------------------------------------------
-  // UI BANNER RENDERING
+  // UI BANNER RENDERING (with Accessibility + Versioning)
   // ------------------------------------------------------------------
 
   const banner = document.createElement("div");
   banner.id = "dod-geo-risk-banner";
+
+  // Accessibility improvements
+  banner.setAttribute("role", "alert");
+  banner.setAttribute("aria-live", "assertive");
+
+  // Version / audit tagging
+  banner.setAttribute("data-policy-version", "geo-risk-v1.1");
+
   banner.style.position = "sticky";
   banner.style.top = "0";
   banner.style.zIndex = "999999";
@@ -67,23 +71,34 @@
   banner.style.textAlign = "center";
   banner.style.borderBottom = "3px solid #ffcc00";
 
-  banner.textContent =
-    message + ` (Region Code: ${countryCode})`;
+  banner.textContent = `${message} (Region Code: ${countryCode})`;
 
   document.body.prepend(banner);
+
+  // ------------------------------------------------------------------
+  // MUTATION OBSERVER (SPA / Dynamic DOM Resilience)
+  // ------------------------------------------------------------------
+
+  const observer = new MutationObserver(() => {
+    if (!document.getElementById("dod-geo-risk-banner")) {
+      document.body.prepend(banner);
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: false
+  });
 
   // ------------------------------------------------------------------
   // TELEMETRY SIGNALING (MENLO-COMPATIBLE)
   // ------------------------------------------------------------------
 
   // DOM marker for Menlo session analytics
-  document.documentElement.setAttribute(
-    "data-dod-geo-risk-warning",
-    "displayed"
-  );
+  root.setAttribute("data-dod-geo-risk-warning", "displayed");
 
   // Console signal for policy + script correlation
   console.warn(
-    `[DoD-GEO-RISK] cocom=${cocom} country=${countryCode} host=${location.hostname}`
+    `[DoD-GEO-RISK] version=geo-risk-v1.1 cocom=${cocom} country=${countryCode} host=${location.hostname}`
   );
 })();
