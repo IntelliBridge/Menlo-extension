@@ -32,36 +32,6 @@ This system is intentionally split into four layers:
 
 This separation allows the same policies and scripts to be reused across on-prem, hybrid, or cloud deployments, and across multiple vendors.
 
-Repository Structure:
-adaptive-web-control-plane/
-│
-├── policies/ # Abstract policy intent
-│ ├── ai-usage.yaml
-│ ├── credential-protection.yaml
-│ └── geo-risk.yaml
-│
-├── scripts/ # JavaScript enforcement logic
-│ ├── ai-warning-banner.js
-│ ├── data-redaction.js
-│ ├── credential-guard.js
-│ ├── geo-risk-ui.inject.js
-│ ├── social-media-controls.inject.js
-│ └── dlp-inline.inject.js
-│
-├── telemetry/ # Telemetry classification reference
-│ └── events.yaml
-│
-├── adapters/
-│ └── menlo/ # Vendor-specific adapter
-│ ├── client.py
-│ ├── deploy.py
-│ └── translate.py
-│
-├── config/
-│ ├── environments.yaml # Environment configuration (no secrets)
-│ └── vault.yaml # Secrets (NOT committed)
-│
-├── deploy.py # Control plane executor
 
 How the System Works: (End-to-End)
   1. Policy Definition
