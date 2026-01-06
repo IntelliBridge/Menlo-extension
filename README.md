@@ -32,13 +32,14 @@ This system is intentionally split into four layers:
 
 This separation allows the same policies and scripts to be reused across on-prem, hybrid, or cloud deployments, and across multiple vendors.
 
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 How the System Works: (End-to-End)
   1. Policy Definition
 
   Policies are defined in YAML under policies/.
 
-Example:
+ Example Below:
 
 policy:
   name: High-Risk Geography Warning
@@ -49,13 +50,15 @@ policy:
       - geo-risk-ui.inject
 
 
-  Policies define intent only:
+  Remember that Policies define intent only:
 
-  When something applies
+   - When something applies
 
-  What enforcement should occur
+   - What enforcement should occur
 
-  They do not contain vendor syntax.
+   - They do not contain vendor syntax.
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   2. Script Enforcement
 
@@ -83,52 +86,58 @@ policy:
 
   This makes them compatible with Menlo and similar platforms.
 
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
   3. Telemetry Model
 
   Injected scripts do not send telemetry themselves.
 
   Instead, they:
 
-  set DOM attributes (e.g. data-dod-ai-warning="displayed")
+  - set DOM attributes (e.g. data-dod-ai-warning="displayed")
 
-  emit console.warn() messages
+  - emit console.warn() messages
 
-  Menlo:
+  Menlo then does the following:
 
-  observes script execution
+  - observes script execution
 
-  correlates DOM + console signals
+  - correlates DOM + console signals
 
-  links events to policy, user, and session
+  - links events to policy, user, and session
 
-  This model:
+  This model will:
 
-  preserves isolation
+  - preserves isolation
 
-  avoids data exfiltration
+  - avoids data exfiltration
 
-  aligns with RMF constraints
+  - aligns with RMF constraints (RMF, AKA: Risk Management Framework, constraints refer to limitations that impact how organizations implement and manage cybersecurity controls.)
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   4. Vendor Adapter (Menlo)
 
   The Menlo adapter:
 
-  translates abstract policies into Menlo rules
+  - translates abstract policies into Menlo rules
 
-  uploads JavaScript injection scripts
+  - uploads JavaScript injection scripts
 
-  binds scripts to policies
+  - binds scripts to policies
 
-  All Menlo-specific logic is contained in:
+  All Menlo-specific logic is contained in the following folder:
 
   adapters/menlo/
 
 
-  This allows future adapters (e.g. Zscaler, Island) without changing policies or scripts.
+  This allows for future adapters (e.g. Zscaler, Island) without changing policies or scripts, keeping things agnostic.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=  
 
 5. Secrets Handling
 
-Secrets are never hard-coded.
+- Secrets are never hard-coded.
 
 config/vault.yaml contains API tokens and is excluded from Git.
 
@@ -139,93 +148,104 @@ menlo:
     api_token: "REDACTED"
 
 
-The control plane reads secrets only at runtime.
+- The control plane reads secrets only at runtime.
 
-Deployment Flow:
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-Running a Deployment
+6. Deployment Flow:
 
-python3 deploy.py
+- Running a Deployment
 
-What Happens:
+  python3 deploy.py
 
-Configuration is loaded
+What Happens when you execute the deploy.py file:
 
-Secrets are read from the vault
+  1. Configuration is loaded
 
-All JavaScript files are uploaded to Menlo
+  2. Secrets are read from the vault
 
-All policy YAMLs are translated into Menlo rules
+  3. All JavaScript files are uploaded to Menlo
 
-Policies activate script injection
+  4. All policy YAMLs are translated into Menlo rules
 
-No users are interrupted.
-No browsers are restarted.
-No endpoint changes occur.
+  5. Policies activate script injection
 
-Runtime Behavior (What Users Experience)
+  - No users are interrupted.
+  - No browsers are restarted.
+  - No endpoint changes occur.
 
-When a user browses:
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-Traffic is routed through Menlo isolation
+7. Runtime Behavior (What Users Experience)
 
-Menlo evaluates policies
+  - When a user browses:
 
-Matching policies inject scripts
+    Traffic is routed through Menlo isolation
 
-Scripts execute inside the isolated DOM
+  - Menlo evaluates policies
 
-Warnings, redaction, or blocking occur in real time
+  - Matching policies inject scripts
 
-All enforcement is session-scoped and policy-driven.
+  - Scripts execute inside the isolated DOM
 
-Rollback & Updates:
+      Warnings, redaction, or blocking occur in real time
 
-Updating scripts affects new sessions only
+      All enforcement is session-scoped and policy-driven.
 
-Updating policies affects new sessions only
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-Removing a policy immediately disables enforcement
+8. Rollback & Updates:
 
-Re-running deployment is safe
+ - Updating scripts affects new sessions only
 
-This enables zero-downtime updates.
+ - Updating policies affects new sessions only
 
-Requirements & Assumptions:
-Required
+ - Removing a policy immediately disables enforcement
 
-Menlo Security tenant with script injection enabled
+ - Re-running deployment is safe
 
-API access to Menlo
+   This enables zero-downtime updates.
 
-Python 3.x
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-   
 
-Menlo Configuration Dependencies
+9. Requirements & Assumptions:
 
-Policies must inject metadata attributes such as:
+ - What is Required for operation
 
-data-cocom="EUCOM"
-data-geo-risk="high"
-data-country-code="CN"
+    Menlo Security tenant with script injection enabled
+
+    API access to Menlo
+
+    Python 3.x
+
+ - Menlo Configuration Dependencies
+
+    Policies must inject metadata attributes such as:
+
+      data-cocom="EUCOM"
+      data-geo-risk="high"
+      data-country-code="CN"
 
 
-Scripts safely fall back to defaults if metadata is not present.
+ - Scripts safely fall back to defaults if metadata is not present.
 
-Security & Compliance Notes
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-No user data is exfiltrated
+10. Security & Compliance Notes
 
-No content classification is asserted
+  - No user data is exfiltrated
 
-Messaging is advisory and DoD-aligned
+  - No content classification is asserted
 
-Enforcement is transparent and auditable
+  - Messaging is advisory and DoD-aligned
+
+  - Enforcement is transparent and auditable
 
 This design supports:
 
-ATO review
+  - ATO review
 
-Least-privilege principles
+  - Least-privilege principles
 
 Extensibility:
 
@@ -240,6 +260,8 @@ You can safely:
   - add new vendor adapters
 
 No refactoring required.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 Summary:
 
