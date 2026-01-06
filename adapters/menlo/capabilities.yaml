@@ -1,0 +1,7 @@
+capabilities:
+  supports:
+    - js_injection
+    - metadata_policy
+    - session_controls
+    - inline_dlp
+    - geo_enforcement
