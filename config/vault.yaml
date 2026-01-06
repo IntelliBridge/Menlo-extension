@@ -1,6 +1,27 @@
-menlo:
-  prod:
-    api_token: "REPLACE_WITH_PROD_TOKEN"
+# ------------------------------------------------------------------
+# Vault Reference Configuration
+#
+# This file defines WHERE secrets live in Vault
+# and HOW they are expected to be injected.
+#
+# ⚠️ No secrets are stored here.
+# ------------------------------------------------------------------
 
-  test:
-    api_token: "REPLACE_WITH_TEST_TOKEN"
+vault:
+  provider: hashicorp
+  address_env: VAULT_ADDR
+  token_env: VAULT_TOKEN
+
+  # Logical secret paths (KV v2 assumed)
+  secrets:
+    menlo:
+      description: Menlo API credentials
+      path: secret/data/menlo
+      keys:
+        - api_token
+
+    telemetry:
+      description: Telemetry exporter credentials
+      path: secret/data/telemetry
+      keys:
+        - api_key
