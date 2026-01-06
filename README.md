@@ -114,7 +114,7 @@ policy:
 
   - aligns with RMF constraints (RMF, AKA: Risk Management Framework, constraints refer to limitations that impact how organizations implement and manage cybersecurity controls.)
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   4. Vendor Adapter (Menlo)
 
