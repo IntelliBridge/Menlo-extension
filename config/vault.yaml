@@ -12,16 +12,17 @@ vault:
   address_env: VAULT_ADDR
   token_env: VAULT_TOKEN
 
-  # Logical secret paths (KV v2 assumed)
   secrets:
     menlo:
       description: Menlo API credentials
       path: secret/data/menlo
       keys:
-        - api_token
+        - name: api_token
+          env: MENLO_API_TOKEN
 
     telemetry:
       description: Telemetry exporter credentials
       path: secret/data/telemetry
       keys:
-        - api_key
+        - name: api_key
+          env: TELEMETRY_API_KEY
