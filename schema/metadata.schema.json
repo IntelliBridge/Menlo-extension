@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "required": ["required", "source"],
+      "properties": {
+        "required": { "type": "array", "minItems": 1 },
+        "source": { "type": "object" }
+      }
+    }
+  }
+}
