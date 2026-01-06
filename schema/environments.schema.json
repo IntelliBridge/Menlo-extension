@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "environments": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description", "enabled", "adapter", "api_url", "vault_path"],
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "api_url": { "type": "string", "format": "uri" }
+        }
+      }
+    }
+  }
+}
