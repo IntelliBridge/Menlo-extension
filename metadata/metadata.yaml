@@ -1,0 +1,15 @@
+metadata:
+  required:
+    - user_id
+    - user_group
+    - device_trust
+    - geo_risk
+
+  source:
+    user_id: idp
+    user_group: idp
+    device_trust: endpoint
+    geo_risk: menlo
+
+  enforcement:
+    fail_if_missing: true
