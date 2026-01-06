@@ -1,10 +1,38 @@
 environments:
   prod:
-    adapter: menlo
+    description: Production Menlo tenant
+    enabled: true
+
+    adapter:
+      name: menlo
+      version: v1
+
     api_url: https://api.menlosecurity.com
     vault_path: menlo.prod
 
+    vault:
+      kv_version: v2
+
+    deployment:
+      require_vault: true
+      require_adapter: true
+      block_if_disabled: true
+
+    promotion:
+      allowed_from:
+        - test
+      requires_approval: true
+
   test:
-    adapter: menlo
+    description: Test Menlo tenant
+    enabled: true
+
+    adapter:
+      name: menlo
+      version: v1
+
     api_url: https://api.menlosecurity.com
     vault_path: menlo.test
+
+    vault:
+      kv_version: v2
